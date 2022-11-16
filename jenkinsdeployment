@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkinsdep
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      name: jenkinspod
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: container
+        image: khajaweb/mavenwebapp:2
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkinsservice
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 8080
